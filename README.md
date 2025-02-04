@@ -7,7 +7,7 @@
 配置完成 [LangBot](https://github.com/RockChinQ/LangBot) 主程序后使用管理员账号向机器人发送命令即可安装：
 
 ```
-!plugin get https://github.com/sanxianxiaohuntun/tieba_mode
+!plugin get https://github.com/sanxianxiaohuntun/TieBa_mode
 ```
 ## 效果图
 ![95c751f628af31686878b6b624500b78](https://github.com/user-attachments/assets/1e8702d0-7b28-4e50-bc64-8de266a9e249)
