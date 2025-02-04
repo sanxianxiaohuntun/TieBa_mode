@@ -30,11 +30,21 @@ class TiebaModePlugin(BasePlugin):
             "温和": os.path.join(os.path.dirname(__file__), "温和.json")
         }
 
-    # 处理命令
+    # 处理个人消息命令
     @handler(PersonNormalMessageReceived)
+    async def handle_person_command(self, ctx: EventContext):
+        await self.handle_command(ctx)
+
+    # 处理群消息命令
+    @handler(GroupNormalMessageReceived)
+    async def handle_group_command(self, ctx: EventContext):
+        await self.handle_command(ctx)
+
+    # 通用命令处理逻辑
     async def handle_command(self, ctx: EventContext):
         msg = ctx.event.text_message.lower()  # 转换为小写
         user_id = ctx.event.sender_id
+        is_group = isinstance(ctx.event, GroupNormalMessageReceived)
 
         if msg == "/贴吧帮助":
             help_text = [
@@ -49,6 +59,7 @@ class TiebaModePlugin(BasePlugin):
                 "3. 注意事项：",
                 "   • 开启后对话将采用贴吧风格",
                 "   • 关闭后恢复正常",
+                "   • 群聊和私聊均可使用",
                 "4. 温馨提示：",
                 "   • 命令和风格名称不区分大小写"
             ]
@@ -74,10 +85,11 @@ class TiebaModePlugin(BasePlugin):
                 with open(self.templates[style], "r", encoding="utf-8") as f:
                     self.prompt_template = json.load(f)
                     self.enabled_users.add(user_id)
-                    ctx.add_return("reply", [f"已开启贴吧模式（{style} 风格）"])
+                    chat_type = "群聊" if is_group else "私聊"
+                    ctx.add_return("reply", [f"已在{chat_type}开启贴吧模式（{style} 风格）"])
                     ctx.prevent_default()
                     if self.config.get("debug", False):
-                        print(f"[贴吧模式] 用户 {user_id} 开启贴吧模式，风格: {style}")
+                        print(f"[贴吧模式] 用户 {user_id} 在{chat_type}开启贴吧模式，风格: {style}")
             except Exception as e:
                 ctx.add_return("reply", [f"加载风格失败: {e}"])
                 ctx.prevent_default()
@@ -85,10 +97,11 @@ class TiebaModePlugin(BasePlugin):
         elif msg == "/关闭贴吧模式":
             if user_id in self.enabled_users:
                 self.enabled_users.remove(user_id)
-                ctx.add_return("reply", ["已关闭贴吧模式"])
+                chat_type = "群聊" if is_group else "私聊"
+                ctx.add_return("reply", [f"已在{chat_type}关闭贴吧模式"])
                 ctx.prevent_default()
                 if self.config.get("debug", False):
-                    print(f"[贴吧模式] 用户 {user_id} 关闭贴吧模式")
+                    print(f"[贴吧模式] 用户 {user_id} 在{chat_type}关闭贴吧模式")
 
     # 处理提示词注入
     @handler(PromptPreProcessing)
