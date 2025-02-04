@@ -5,7 +5,7 @@ import yaml
 import json
 import os
 
-@register(name="贴吧模式", description="模拟贴吧老哥/老姐的说话方式", version="0.1", author="小馄饨")
+@register(name="贴吧老哥模式/喷子/键盘侠", description="模拟贴吧老哥的喷人方式有温和版和暴躁版", version="0.1", author="小馄饨")
 class TiebaModePlugin(BasePlugin):
     enabled_users = set()
     prompt_template = []
